@@ -2,6 +2,7 @@ package ru.netology.page;
 
 import com.codeborne.selenide.Condition;
 import com.codeborne.selenide.SelenideElement;
+import ru.netology.data.DataGenerator;
 
 import static com.codeborne.selenide.Selenide.$;
 
@@ -16,17 +17,16 @@ public class TransferPage {
     }
 
 
-    public AccountPage moneyTransferCorrect(String amount, String card) {
+    public AccountPage moneyTransferCorrect(String amount, DataGenerator.UserCards info) {
         amountField.setValue(amount);
-        cardField.setValue(card);
+        cardField.setValue(String.valueOf(info));
         button.click();
         return new AccountPage();
     }
 
-    public AccountPage moneyTransferIncorrect(String amount, String card) {
+    public void moneyTransferIncorrect(String amount, DataGenerator.UserCards info) {
         amountField.setValue(amount);
-        cardField.setValue(card);
+        cardField.setValue(String.valueOf(info));
         button.shouldBe(Condition.disabled);
-        return null;
     }
 }

@@ -1,7 +1,7 @@
 package ru.netology.page;
 
 import com.codeborne.selenide.Condition;
-import ru.netology.test.DataGenerator;
+import ru.netology.data.DataGenerator;
 
 import static com.codeborne.selenide.Selenide.$;
 
