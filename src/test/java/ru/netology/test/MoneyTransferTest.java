@@ -11,8 +11,8 @@ import static com.codeborne.selenide.Selenide.open;
 
 public class MoneyTransferTest {
     private static int transferAmount;
-    private static int cardBalance;
-
+    private static int firstCardBalance;
+    private static int secondCardBalance;
 
     DataGenerator.UserInfo userInfo = DataGenerator.getUserInfo();
     DataGenerator.AuthorizationCode code = DataGenerator.getAuthorizationCode();
@@ -28,45 +28,50 @@ public class MoneyTransferTest {
     @Test
     public void shouldTransferMoneyToFirstCard() {
         LoginPage loginPage = new LoginPage();
-        cardBalance = loginPage
-                .validLogin(userInfo)
-                .validCode(code)
-                .getSecondCardBalance();
-        transferAmount = DataGenerator.getTransferAmount(cardBalance).getAmount();
-        int expected = cardBalance - transferAmount;
+        loginPage.validLogin(userInfo).validCode(code);
         AccountPage accountPage = new AccountPage();
+        firstCardBalance = accountPage.getFirstCardBalance();
+        secondCardBalance = accountPage.getSecondCardBalance();
+        transferAmount = DataGenerator.getTransferAmount(secondCardBalance).getAmount();
+        int expectedFirstCard = firstCardBalance + transferAmount;
+        int expectedSecondCard = secondCardBalance - transferAmount;
         accountPage
                 .transferToFirstCard()
                 .moneyTransferCorrect(String.valueOf(transferAmount), secondCard);
-        int actual = accountPage.getSecondCardBalance();
-        Assertions.assertEquals(expected, actual);
+        int actualFirstCard = accountPage.getFirstCardBalance();
+        int actualSecondCard = accountPage.getSecondCardBalance();
+        Assertions.assertEquals(expectedFirstCard, actualFirstCard);
+        Assertions.assertEquals(expectedSecondCard, actualSecondCard);
+
     }
 
     @Test
     public void shouldTransferMoneyToSecondCard() {
         LoginPage loginPage = new LoginPage();
-        cardBalance = loginPage
-                .validLogin(userInfo)
-                .validCode(code)
-                .getFirstCardBalance();
-        transferAmount = DataGenerator.getTransferAmount(cardBalance).getAmount();
-        int expected = cardBalance - transferAmount;
+        loginPage.validLogin(userInfo).validCode(code);
         AccountPage accountPage = new AccountPage();
+        firstCardBalance = accountPage.getFirstCardBalance();
+        secondCardBalance = accountPage.getSecondCardBalance();
+        transferAmount = DataGenerator.getTransferAmount(firstCardBalance).getAmount();
+        int expectedFirstCard = firstCardBalance - transferAmount;
+        int expectedSecondCard = secondCardBalance + transferAmount;
         accountPage
                 .transferToSecondCard()
                 .moneyTransferCorrect(String.valueOf(transferAmount), firstCard);
-        int actual = accountPage.getFirstCardBalance();
-        Assertions.assertEquals(expected, actual);
+        int actualFirstCard = accountPage.getFirstCardBalance();
+        int actualSecondCard = accountPage.getSecondCardBalance();
+        Assertions.assertEquals(expectedFirstCard, actualFirstCard);
+        Assertions.assertEquals(expectedSecondCard, actualSecondCard);
     }
 
     @Test
     public void shouldNotTransferMoneyIfItIsNotEnough() {
         LoginPage loginPage = new LoginPage();
-        cardBalance = loginPage
+        firstCardBalance = loginPage
                 .validLogin(userInfo)
                 .validCode(code)
                 .getFirstCardBalance();
-        transferAmount = cardBalance + 100;
+        transferAmount = firstCardBalance + 100;
         AccountPage accountPage = new AccountPage();
         accountPage
                 .transferToSecondCard()
